@@ -30,7 +30,7 @@ def transform(image, rotate_range, size=1):
     if randrange(0, 5) == 1:
         result = result.transpose(method=Image.FLIP_LEFT_RIGHT)
     
-    result = result.resize((round(1000*size), round(1000*size)))
+    result = result.resize((round(1000*size), round(1000*size)), resample=Image.ANTIALIAS)
         
     return result
     

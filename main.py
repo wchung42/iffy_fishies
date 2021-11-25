@@ -13,16 +13,17 @@
 from PIL import Image
 from generate_fish import draw_fish_design_1, draw_fish_design_2, draw_fish_design_3
 import random
+import time
 
 HEIGHT = 2160
 WIDTH = 3840
 
-main_canvas = Image.new(mode='RGBA', color='white', size=(WIDTH, HEIGHT))
+main_canvas = Image.new(mode='RGBA', color='#78e4ff', size=(WIDTH, HEIGHT))
 
 def calc_donation_scale_multiplier(donation):
     '''Convert donation to a scaling multiplier'''
-    if donation >= 500:
-        donation = 500
+    if donation >= 750:
+        donation = 750
     
     scale = donation/1000
     
@@ -31,8 +32,8 @@ def calc_donation_scale_multiplier(donation):
     else:
         return scale
     
-for i in range(100):
-    multiplier = calc_donation_scale_multiplier(random.randrange(1, 501, 5))
+for i in range(50):
+    multiplier = calc_donation_scale_multiplier(random.randrange(1, 751, 5))
     
     fish_func = [draw_fish_design_1(multiplier), draw_fish_design_2(multiplier), draw_fish_design_3(multiplier)]
     gen_fish_func = random.choice(fish_func)
@@ -43,5 +44,6 @@ for i in range(100):
     main_canvas.alpha_composite(img, dest=coors)
     
     print(f'Fish {i} has been created.')
-    main_canvas.save('test_main.png')
+    
+main_canvas.save('test_main.png')
     
