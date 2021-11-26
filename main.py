@@ -18,26 +18,27 @@ import time
 HEIGHT = 2160
 WIDTH = 3840
 
-main_canvas = Image.new(mode='RGBA', color='#78e4ff', size=(WIDTH, HEIGHT))
+main_canvas = Image.new(mode='RGBA', color='#000000', size=(WIDTH, HEIGHT))
 
-def calc_donation_scale_multiplier(donation):
-    '''Convert donation to a scaling multiplier'''
-    if donation >= 750:
-        donation = 750
+def calc_scale_multiplier(val):
+    '''Convert given val to a scaling multiplier'''
+    if val >= 750:
+        val = 750
     
-    scale = donation/1000
+    multiplier = val/1000
     
-    if scale < 0.2:
+    if multiplier < 0.2:
         return 0.2
     else:
-        return scale
+        return multiplier
     
 for i in range(50):
-    multiplier = calc_donation_scale_multiplier(random.randrange(1, 751, 5))
+    multiplier = calc_scale_multiplier(random.randrange(1, 751, 5))
     
-    fish_func = [draw_fish_design_1(multiplier), draw_fish_design_2(multiplier), draw_fish_design_3(multiplier)]
-    gen_fish_func = random.choice(fish_func)
-    img = gen_fish_func
+    # fish_func = [draw_fish_design_1(multiplier), draw_fish_design_2(multiplier), draw_fish_design_3(multiplier)]
+    #gen_fish_func = random.choice(fish_func)
+    #img = gen_fish_func
+    img = draw_fish_design_2(multiplier)
     #img.save(f'Fish/fish{i}.png')
     coors = (random.randrange(10, 3500), random.randrange(10, 2100))
     
