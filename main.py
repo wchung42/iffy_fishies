@@ -35,10 +35,10 @@ def calc_scale_multiplier(val):
 for i in range(50):
     multiplier = calc_scale_multiplier(random.randrange(1, 751, 5))
     
-    # fish_func = [draw_fish_design_1(multiplier), draw_fish_design_2(multiplier), draw_fish_design_3(multiplier)]
-    #gen_fish_func = random.choice(fish_func)
-    #img = gen_fish_func
-    img = draw_fish_design_2(multiplier)
+    fish_func = [draw_fish_design_1(multiplier), draw_fish_design_2(multiplier)]
+    gen_fish_func = random.choice(fish_func)
+    img = gen_fish_func
+    #img = draw_fish_design_2(multiplier)
     #img.save(f'Fish/fish{i}.png')
     coors = (random.randrange(10, 3500), random.randrange(10, 2100))
     

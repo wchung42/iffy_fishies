@@ -12,6 +12,7 @@
 from PIL import Image, ImageDraw
 from random import randrange
 from util import *
+import math
 
 def transform(image, rotate_range, size_multiplier=1):
     '''Rotates given image within rotate_range, flips image and returns the resulting image'''
@@ -25,6 +26,22 @@ def transform(image, rotate_range, size_multiplier=1):
         
     return result
     
+# def draw_fish_design_1(size):
+#     '''Generate fish with design #1'''
+    
+#     img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
+
+#     draw = ImageDraw.Draw(img)
+    
+#     draw.polygon([(450, 175), (450, 500), (150, 500)], fill=rand_color(), outline='black') #triangle 1 head
+#     draw.polygon([(450, 825), (450, 500), (150, 500)], fill=rand_color(), outline='black') #triangle 2 head
+#     draw.polygon([(450, 240), (450, 594), (625, 417)], fill=rand_color(), outline='black') # triangle 3 body
+#     draw.polygon([(450, 594), (625, 417), (625, 583), (450, 760)], fill=rand_color(), outline='black') # rhombus body
+#     draw.polygon([(625, 417), (791, 417), (791, 583), (625, 583)], fill=rand_color(), outline='black') # square body
+#     draw.polygon([(625, 417), (791, 417), (791, 251)], fill=rand_color(), outline='black') # triangle top fin
+#     draw.polygon([(625, 583), (791, 583), (791, 749)], fill=rand_color(), outline='black') # triangle bottom fin
+
+#     return transform(img, (0, 45), size)
 def draw_fish_design_1(size):
     '''Generate fish with design #1'''
     
@@ -32,15 +49,70 @@ def draw_fish_design_1(size):
 
     draw = ImageDraw.Draw(img)
     
-    draw.polygon([(450, 175), (450, 500), (150, 500)], fill=rand_color(), outline='black') #triangle 1 head
-    draw.polygon([(450, 825), (450, 500), (150, 500)], fill=rand_color(), outline='black') #triangle 2 head
-    draw.polygon([(450, 240), (450, 594), (625, 417)], fill=rand_color(), outline='black') # triangle 3 body
-    draw.polygon([(450, 594), (625, 417), (625, 583), (450, 760)], fill=rand_color(), outline='black') # rhombus body
-    draw.polygon([(625, 417), (791, 417), (791, 583), (625, 583)], fill=rand_color(), outline='black') # square body
-    draw.polygon([(625, 417), (791, 417), (791, 251)], fill=rand_color(), outline='black') # triangle top fin
-    draw.polygon([(625, 583), (791, 583), (791, 749)], fill=rand_color(), outline='black') # triangle bottom fin
+    # head - triangle a
+    head_triangle_a_bl = rand_coor(125, 175, 475, 525)
+    head_triangle_a_bl_x, head_triangle_a_bl_y = head_triangle_a_bl
+    head_triangle_a_tp = (head_triangle_a_bl_x + randrange(250, 315), head_triangle_a_bl_y - randrange(225, 325))
+    head_triangle_a_br = (head_triangle_a_bl_x + randrange(250, 315), head_triangle_a_bl_y + randrange(-25, 25))
+    draw.polygon([head_triangle_a_bl, head_triangle_a_tp, head_triangle_a_br], fill=rand_color(), outline='black')
 
-    return transform(img, (0, 45), size)
+    # head - triangle b 
+    head_triangle_b_tpl = head_triangle_a_bl
+    head_triangle_b_tpr = head_triangle_a_br
+    head_triangle_b_tpl_x, head_triangle_b_tpl_y = head_triangle_b_tpl
+    head_triangle_b_btm = (head_triangle_b_tpl_x + randrange(250, 315), head_triangle_b_tpl_y + randrange(225, 325))
+    draw.polygon([head_triangle_b_tpl, head_triangle_b_tpr, head_triangle_b_btm], fill=rand_color(), outline='black')
+
+    # body - rhombus
+    m = calc_slope(head_triangle_b_tpr, head_triangle_b_btm) # calculate slope and y-intercept of head_triangle_b to find tpr and btmr points of rhombus
+    b = calc_yintercept(head_triangle_b_tpr, m)
+
+    rhombus_tpl_y = randrange(math.floor(head_triangle_b_tpr[1] * 1.05), math.floor(head_triangle_b_tpr[1] * 1.1)) # find y along the side of the triangle
+    rhombus_tpl_x = head_triangle_b_tpr[0] if m == 0 else math.floor((rhombus_tpl_y - b) / m) # if vertical, x == x of triangle
+    rhombus_tpl = (rhombus_tpl_x, rhombus_tpl_y)
+
+    rhombus_btml_y = randrange(math.floor(head_triangle_b_tpr[1] * 1.35), math.floor(head_triangle_b_tpr[1] * 1.4))
+    rhombus_btml_x = head_triangle_b_tpr[0] if m == 0 else math.floor((rhombus_btml_y - b) / m)# if vertical, x == x of triangle
+    rhombus_btml = (rhombus_btml_x, rhombus_btml_y)
+
+    # top right point with respect to top left point of rhombus
+    rhombus_tpr = (randrange(rhombus_tpl_x + 100, rhombus_tpl_x + 165), randrange(rhombus_tpl_y - 100, rhombus_tpl_y - 45))
+    rhombus_btmr = (randrange(rhombus_tpl_x + 100, rhombus_tpl_x + 165), randrange(rhombus_tpl_y + 45, rhombus_tpl_y + 100))
+    draw.polygon([rhombus_tpl, rhombus_btml, rhombus_btmr, rhombus_tpr], fill=rand_color(), outline='black')
+
+    # body - triangle
+    body_triangle_btm = rhombus_tpl
+    body_triangle_midl = head_triangle_a_br
+    body_triangle_midr = rhombus_tpr
+
+    m = calc_slope(head_triangle_a_tp, head_triangle_a_br)
+    b = calc_yintercept(head_triangle_a_tp, m)
+
+    body_triangle_tp_y = randrange(math.floor(head_triangle_a_tp[1] * 1.2), math.floor(head_triangle_a_tp[1] * 1.3))
+    body_triangle_tp_x = head_triangle_a_tp[0] if m == 0 else math.floor((body_triangle_tp_y - b) / m)
+    body_triangle_tp = (body_triangle_tp_x, body_triangle_tp_y)
+    draw.polygon([body_triangle_tp, body_triangle_midl, body_triangle_btm, body_triangle_midr], fill=rand_color(), outline='black')
+
+    # tail - square 
+    tail_square_tpl = rhombus_tpr
+    tail_square_btml = rhombus_btmr
+    tail_square_btmr = (randrange(tail_square_btml[0] + 75, tail_square_btml[0] + 126), randrange(tail_square_btml[1] - 45, tail_square_btml[1] + 45))
+    tail_square_tpr = (randrange(tail_square_tpl[0] + 75, tail_square_tpl[0] + 126), randrange(tail_square_tpl[1] - 45, tail_square_tpl[1] + 45))
+    draw.polygon([tail_square_tpl, tail_square_btml, tail_square_btmr, tail_square_tpr], fill=rand_color(), outline='black')
+
+    # tail - triangle a
+    tail_triangle_a_btml = tail_square_tpl
+    tail_triangle_a_btmr = tail_square_tpr
+    tail_triangle_a_tp = (randrange(tail_triangle_a_btmr[0] - 25, tail_triangle_a_btmr[0] + 50), randrange(tail_triangle_a_btmr[1] - 150, tail_triangle_a_btmr[1] - 75))
+    draw.polygon([tail_triangle_a_btml, tail_triangle_a_btmr, tail_triangle_a_tp], fill=rand_color(), outline='black')
+
+    # tail - triangle b
+    tail_triangle_b_tpl = tail_square_btml
+    tail_triangle_b_tpr = tail_square_btmr
+    tail_triangle_b_btm = (randrange(tail_triangle_b_tpr[0] - 25, tail_triangle_b_tpr[0] + 50), randrange(tail_triangle_b_tpr[1] + 75, tail_triangle_b_tpr[1] + 150))
+    draw.polygon([tail_triangle_b_tpl, tail_triangle_b_tpr, tail_triangle_b_btm], fill=rand_color(), outline='black')
+
+    return transform(img, (-45, 45), size)
 
 # def draw_fish_design_2(size):
 #     '''Generate fish with design #2'''
@@ -64,7 +136,7 @@ def draw_fish_design_2(size):
     
     draw = ImageDraw.Draw(img)
     
-    square_top_left = rand_coor(725, 775, 475, 525)
+    square_top_left = rand_coor(700, 750, 475, 525)
     square_top_left_x, square_top_left_y = square_top_left
     square_top_right = (square_top_left_x + randrange(83, 167), square_top_left_y + randrange(0, 83))
     square_bottom_right = (square_top_left_x + randrange(83, 166), square_top_left_y + randrange(83, 167))
@@ -97,7 +169,7 @@ def draw_fish_design_2(size):
     draw.polygon([body_triangleish_b_bottom_right, bottom_fin_right, bottom_fin_left], fill=rand_color(), outline='black')
 
     # top fin - rhombus with respect to head_triangle_top
-    top_fin_bl = (head_triangle_top[0] - randrange(69, 139), head_triangle_top[1] - randrange(25, 75))
+    top_fin_bl = (head_triangle_top[0] - randrange(90, 139), head_triangle_top[1] - randrange(25, 75))
     top_fin_tl = (head_triangle_top[0] - randrange(75, 125), head_triangle_top[1] - randrange(100, 150))
     top_fin_tr = (head_triangle_top[0] - randrange(25, 45), head_triangle_top[1] - randrange(75, 125))
     draw.polygon([head_triangle_top, top_fin_bl, top_fin_tl, top_fin_tr], fill=rand_color(), outline='black')
@@ -107,7 +179,7 @@ def draw_fish_design_2(size):
     tail_bottom = (body_triangleish_b_bottom_left[0] - randrange(35, 100), body_triangleish_b_bottom_left[1] + randrange(35, 100))
     draw.polygon([body_triangleish_b_bottom_left, tail_top, tail_bottom], fill=rand_color(), outline='black')
 
-    return transform(img, (0, 90), size)
+    return transform(img, (-45, 45), size)
 
 def draw_fish_design_3(size):
     '''Generate fish with design #3'''
