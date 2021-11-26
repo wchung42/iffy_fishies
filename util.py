@@ -3,6 +3,9 @@ from random import randrange
 # Calculate slope
 def calc_slope(p1, p2):
     '''Inputs: p1 and p2 (x, y) tuples; Returns slope'''
+    if p1[0] == p2[0]:
+        return 0
+        
     return (p2[1] - p1[1]) / (p2[0] - p1[0])
 
 # Calculate y-intercept
