@@ -15,7 +15,7 @@ from util import *
 import math
 
 def transform(image, rotate_range, size_multiplier=1):
-    '''Rotates given image within rotate_range, flips image and returns the resulting image'''
+    '''Rotates within rotate_range, flips image and scales image; Returns the resulting image'''
     start, end =  rotate_range
     result = image.rotate(randrange(start, end))
     
@@ -25,9 +25,22 @@ def transform(image, rotate_range, size_multiplier=1):
     result = result.resize((round(1000*size_multiplier), round(1000*size_multiplier)), resample=Image.ANTIALIAS)
         
     return result
-    
 
-def draw_fish_design_1(size):
+def calc_scale_multiplier(val):
+    '''Convert given val to a scaling multiplier'''
+    if val >= 750:
+        val = 750
+    
+    multiplier = val/1000
+    
+    if multiplier < 0.2:    
+        return 0.2
+    else:
+        return multiplier
+          
+# ---------------------------- Iffy Fishy Generation Functions ------------------------------- #
+
+def draw_fish_design_1():
     '''Generate fish with design #1'''
     
     img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
@@ -97,10 +110,10 @@ def draw_fish_design_1(size):
     tail_triangle_b_btm = (randrange(tail_triangle_b_tpr[0] - 25, tail_triangle_b_tpr[0] + 50), randrange(tail_triangle_b_tpr[1] + 75, tail_triangle_b_tpr[1] + 150))
     draw.polygon([tail_triangle_b_tpl, tail_triangle_b_tpr, tail_triangle_b_btm], fill=rand_color(), outline='black')
 
-    return transform(img, (-45, 45), size)
+    return img
 
 
-def draw_fish_design_2(size):
+def draw_fish_design_2():
     '''Generate fish with design #2'''
     img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
     
@@ -149,10 +162,10 @@ def draw_fish_design_2(size):
     tail_bottom = (body_triangleish_b_bottom_left[0] - randrange(35, 100), body_triangleish_b_bottom_left[1] + randrange(35, 100))
     draw.polygon([body_triangleish_b_bottom_left, tail_top, tail_bottom], fill=rand_color(), outline='black')
 
-    return transform(img, (-45, 45), size)
+    return img
 
 
-def draw_fish_design_3(size):
+def draw_fish_design_3():
     '''Generate fish with design #3'''
     img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
     
@@ -213,6 +226,6 @@ def draw_fish_design_3(size):
     upper_fin_triangle_b_tl = (randrange(upper_fin_triangle_b_tr[0] - 100, upper_fin_triangle_b_tr[0] - 75), randrange(upper_fin_triangle_b_tr[1] - 75, upper_fin_triangle_b_tr[1] - 50))
     draw.polygon([upper_fin_triangle_b_br, upper_fin_triangle_b_tr, upper_fin_triangle_b_tl], fill=rand_color(), outline='black')
     
-    return transform(img, (-45, 45),  size)
+    return img
 
     

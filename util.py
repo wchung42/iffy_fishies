@@ -23,16 +23,3 @@ def rand_color():
 def rand_coor(x1, x2, y1, y2):
     '''Generates a random x and random y within given range and Returns a random (x,y) tuple'''
     return (randrange(x1, x2), (randrange(y1, y2)))
-
-
-def calc_scale_multiplier(val):
-    '''Convert given val to a scaling multiplier'''
-    if val >= 750:
-        val = 750
-    
-    multiplier = val/1000
-    
-    if multiplier < 0.2:    
-        return 0.2
-    else:
-        return multiplier
