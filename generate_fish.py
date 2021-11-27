@@ -181,19 +181,82 @@ def draw_fish_design_2(size):
 
     return transform(img, (-45, 45), size)
 
+# def draw_fish_design_3(size):
+#     '''Generate fish with design #3'''
+#     img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
+    
+#     draw = ImageDraw.Draw(img)
+    
+#     draw.polygon([(800, 500), (588, 288), (588, 712)], fill=rand_color(), outline='black') # triangle head 1
+#     draw.polygon([(588, 288), (588, 712), (376, 500)], fill=rand_color(), outline='black') # triangle head 2
+#     draw.polygon([(588, 712), (482, 818), (376, 712), (482, 606)], fill=rand_color(), outline='black') # bottom fin square
+#     draw.polygon([(482, 818), (376, 712), rand_coor(325, 400, 775, 875)], fill=rand_color(), outline='black') # bottom fin triangle
+#     draw.polygon([(588, 288), (482, 182), (482, 394)], fill=rand_color(), outline='black') # top fin triangle
+#     draw.polygon([(482, 182), (482, 394), (376, 288), rand_coor(370, 400, 80, 150)], fill=rand_color(), outline='black') # top fin rhombus
+#     draw.polygon([(376, 500), rand_coor(270, 325, 394, 425), rand_coor(270, 325, 550, 606)], fill=rand_color(), outline='black') # tail triangle
+    
+#     return transform(img, (-45, 45),  size)
+
 def draw_fish_design_3(size):
     '''Generate fish with design #3'''
     img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
     
     draw = ImageDraw.Draw(img)
     
-    draw.polygon([(800, 500), (588, 288), (588, 712)], fill=rand_color(), outline='black') # triangle head 1
-    draw.polygon([(588, 288), (588, 712), (376, 500)], fill=rand_color(), outline='black') # triangle head 2
-    draw.polygon([(588, 712), (482, 818), (376, 712), (482, 606)], fill=rand_color(), outline='black') # bottom fin square
-    draw.polygon([(482, 818), (376, 712), rand_coor(325, 400, 775, 875)], fill=rand_color(), outline='black') # bottom fin triangle
-    draw.polygon([(588, 288), (482, 182), (482, 394)], fill=rand_color(), outline='black') # top fin triangle
-    draw.polygon([(482, 182), (482, 394), (376, 288), rand_coor(370, 400, 80, 150)], fill=rand_color(), outline='black') # top fin rhombus
-    draw.polygon([(376, 500), rand_coor(270, 325, 394, 425), rand_coor(270, 325, 550, 606)], fill=rand_color(), outline='black') # tail triangle
+    # head - triangle
+    head_triangle_mid = rand_coor(750, 801, 450, 550)
+    head_triangle_tp = (randrange(head_triangle_mid[0] - 200, head_triangle_mid[0] - 150), randrange(head_triangle_mid[1] - 125, head_triangle_mid[1] - 75))
+    head_triangle_btm = (randrange(head_triangle_mid[0] - 200, head_triangle_mid[0] - 150), randrange(head_triangle_mid[1] + 75, head_triangle_mid[1] + 125))
+    draw.polygon([head_triangle_mid, head_triangle_tp, head_triangle_btm], fill=rand_color(), outline='black')
+
+    # body - triangle
+    body_triangle_tp = head_triangle_tp
+    body_triangle_btm = head_triangle_btm
+    body_triangle_mid = (randrange(head_triangle_tp[0] - 275, head_triangle_tp[0] - 200), randrange(head_triangle_tp[1] + 75, head_triangle_tp[1] + 125))
+    draw.polygon([body_triangle_tp, body_triangle_btm, body_triangle_mid], fill=rand_color(), outline='black')
+
+    # tail -  triangle
+    tail_mid =  body_triangle_mid
+    tail_tp = (randrange(tail_mid[0] - 75, tail_mid[0] - 50), randrange(tail_mid[1] - 75, tail_mid[1] - 50))
+    tail_btm = (randrange(tail_mid[0] - 75, tail_mid[0] - 50), randrange(tail_mid[1] + 50, tail_mid[1] + 75))
+    draw.polygon([tail_mid, tail_tp, tail_btm], fill=rand_color(), outline='black')
+
+    # bottom fin - square 
+    m = calc_slope(body_triangle_btm, body_triangle_mid)
+    b = calc_yintercept(body_triangle_btm, m)
+
+    x = randrange(body_triangle_mid[0] + 135, body_triangle_mid[0] + 150)
+    y = (m * x) + b
+
+    lower_fin_square_tp = (x, y)
+    lower_fin_square_midr = body_triangle_btm
+    lower_fin_square_midl = (randrange(lower_fin_square_midr[0] - 125, lower_fin_square_midr[0] - 100), randrange(lower_fin_square_midr[1], lower_fin_square_midr[1] + 75))
+    lower_fin_square_btm = (randrange(lower_fin_square_midr[0] - 50, lower_fin_square_midr[0] - 25), randrange(lower_fin_square_midr[1] + 50, lower_fin_square_midr[1] + 75))
+    draw.polygon([lower_fin_square_tp, lower_fin_square_midr, lower_fin_square_btm, lower_fin_square_midl], fill=rand_color(), outline='black')
+
+    # bottom fin - triangle
+    lower_fin_triangle_tp = lower_fin_square_midl
+    lower_fin_triangle_mid = lower_fin_square_btm
+    lower_fin_triangle_btm = (randrange(lower_fin_triangle_tp[0] - 35, lower_fin_triangle_tp[0] + 15), randrange(lower_fin_triangle_tp[1] + 50, lower_fin_triangle_tp[1] + 100))
+    draw.polygon([lower_fin_triangle_tp, lower_fin_triangle_mid, lower_fin_triangle_btm], fill=rand_color(), outline='black')
+
+    # top fin - triangle
+    m = calc_slope(body_triangle_tp, body_triangle_mid)
+    b = calc_yintercept(body_triangle_tp, m)
+
+    x = randrange(body_triangle_tp[0] - 100, body_triangle_tp[0] - 50)
+    y =  math.floor((m * x) + b)
+
+    upper_fin_triangle_btm = (x, y)
+    upper_fin_triangle_mid = body_triangle_tp
+    upper_fin_triangle_tp = (randrange(upper_fin_triangle_btm[0] - 50, upper_fin_triangle_btm[0] + 10), randrange(upper_fin_triangle_btm[1] - 125, upper_fin_triangle_btm[1] - 75))
+    draw.polygon([upper_fin_triangle_btm, upper_fin_triangle_tp, upper_fin_triangle_mid], fill=rand_color(), outline='black')
+
+    # upper fin - triangle b
+    upper_fin_triangle_b_br = upper_fin_triangle_btm
+    upper_fin_triangle_b_tr = upper_fin_triangle_tp
+    upper_fin_triangle_b_tl = (randrange(upper_fin_triangle_b_tr[0] - 100, upper_fin_triangle_b_tr[0] - 75), randrange(upper_fin_triangle_b_tr[1] - 75, upper_fin_triangle_b_tr[1] - 50))
+    draw.polygon([upper_fin_triangle_b_br, upper_fin_triangle_b_tr, upper_fin_triangle_b_tl], fill=rand_color(), outline='black')
     
     return transform(img, (-45, 45),  size)
 
