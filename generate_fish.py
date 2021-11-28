@@ -14,17 +14,21 @@ from random import randrange
 from util import *
 import math
 
-def transform(image, rotate_range, size_multiplier=1):
+def transform(img, rotate_range):
     '''Rotates within rotate_range, flips image and scales image; Returns the resulting image'''
     start, end =  rotate_range
-    result = image.rotate(randrange(start, end))
+    result = img.rotate(randrange(start, end))
     
     if randrange(0, 5) == 1:
         result = result.transpose(method=Image.FLIP_LEFT_RIGHT)
-    
-    result = result.resize((round(1000*size_multiplier), round(1000*size_multiplier)), resample=Image.ANTIALIAS)
         
     return result
+
+def resize(img, size_multiplier=1):
+    '''Returns resized image'''
+    resized_img = img.resize((round(1000*size_multiplier), round(1000*size_multiplier)), resample=Image.ANTIALIAS)
+
+    return resized_img
 
 def calc_scale_multiplier(val):
     '''Convert given val to a scaling multiplier'''
@@ -37,7 +41,7 @@ def calc_scale_multiplier(val):
         return 0.2
     else:
         return multiplier
-          
+
 # ---------------------------- Iffy Fishy Generation Functions ------------------------------- #
 
 def draw_fish_design_1():
