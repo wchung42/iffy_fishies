@@ -19,7 +19,9 @@ FONT_NAME = 'Courier'
 HEIGHT = 2160
 WIDTH = 3840
 
-main_canvas = Image.new(mode='RGBA', color='#000000', size=(WIDTH, HEIGHT))
+BG_COLOR = '#89CFF0'
+
+main_canvas = Image.new(mode='RGBA', color=BG_COLOR, size=(WIDTH, HEIGHT))
 gif_imgs = []
 
 # ---------------------------- Iffy Fishy Functions ------------------------------- #
@@ -42,7 +44,7 @@ def create_fish():
 
     # save original image and transformed image
     orig_img_to_save = original_fish_img
-    trans_img_to_save = resized_transformed_fish_img
+    trans_img_to_save = transformed_fish_img
     
     return resized_transformed_fish_img
 
@@ -138,10 +140,10 @@ def save_gif():
     global gif_image
 
     filename = filedialog.asksaveasfile(mode='wb', title='Save file', initialfile='your_iffy_fishy_giffy', defaultextension='.gif', filetypes=[('GIF', '*.gif')])
-    gif_frames[0].save(filename, save_all=True, append_images=gif_frames[1:], optimize=True, duration=175, loop=0)
+    gif_frames[0].save(filename, save_all=True, append_images=gif_frames[1:], optimize=True, duration=125, loop=0)
 
     # reset gif_image
-    gif_image = Image.new(mode='RGBA', color='#000000', size=(WIDTH, HEIGHT))
+    gif_image = Image.new(mode='RGBA', color=BG_COLOR, size=(WIDTH, HEIGHT))
 
 # ---------------------------- main ------------------------------- #
 
@@ -150,7 +152,7 @@ if __name__=='__main__':
     root.title('Iffy Fishies')
     root.config(padx=50, pady=25)
 
-    logo_img = Image.open('./images/teamseas-tm-logo.png')
+    logo_img = Image.open('./images/logo.png')
     logo_width, logo_height = logo_img.size
     resized_logo = logo_img.resize((logo_width//2, logo_height//2), resample=Image.ANTIALIAS)
     logo = ImageTk.PhotoImage(resized_logo)
@@ -160,7 +162,7 @@ if __name__=='__main__':
     # Initialize preview canvas with default screen
     preview_canvas = tk.Canvas(width=500, height=500)
     preview_canvas.grid(column=0, row=1)
-    default_preview = ImageTk.PhotoImage(Image.new(mode='RGBA', color='#FFFFFF', size=(500, 500)))
+    default_preview = ImageTk.PhotoImage(Image.new(mode='RGBA', color=BG_COLOR, size=(500, 500)))
     canvas_image = preview_canvas.create_image(250, 250, image=default_preview, anchor='center')
     
     orig_img_to_save = None
@@ -169,10 +171,9 @@ if __name__=='__main__':
     fish_imgs = [] # (orig, trans)
 
     # GIF variables
-    frame_counter = 0
     gif_frames = []
 
-    gif_image = Image.new(mode='RGBA', color='#FFFFFF', size=(WIDTH, HEIGHT))
+    gif_image = Image.new(mode='RGBA', color=BG_COLOR, size=(WIDTH, HEIGHT))
 
     # Button frame
     button_frame = tk.Frame(root)
