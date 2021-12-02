@@ -44,10 +44,14 @@ def calc_scale_multiplier(val):
 
 # ---------------------------- Iffy Fishy Generation Functions ------------------------------- #
 
-def draw_fish_design_1():
+def draw_fish_design_1(**kwargs):
     '''Generate fish with design #1'''
-    
-    img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
+    if kwargs.get('color') is not None:
+        bg_color = kwargs.get('color')
+    else:
+        bg_color = (0, 0, 0, 0)
+
+    img = Image.new('RGBA', (1000, 1000), bg_color)
 
     draw = ImageDraw.Draw(img)
     
@@ -117,9 +121,14 @@ def draw_fish_design_1():
     return img
 
 
-def draw_fish_design_2():
+def draw_fish_design_2(**kwargs):
     '''Generate fish with design #2'''
-    img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
+    if kwargs.get('color') is not None:
+        bg_color = kwargs.get('color')
+    else:
+        bg_color = (0, 0, 0, 0)
+
+    img = Image.new('RGBA', (1000, 1000), bg_color)
     
     draw = ImageDraw.Draw(img)
     
@@ -169,9 +178,14 @@ def draw_fish_design_2():
     return img
 
 
-def draw_fish_design_3():
+def draw_fish_design_3(**kwargs):
     '''Generate fish with design #3'''
-    img = Image.new('RGBA', (1000, 1000), (255, 0, 0, 0))
+    if kwargs.get('color') is not None:
+        bg_color = kwargs.get('color')
+    else:
+        bg_color = (0, 0, 0, 0)
+
+    img = Image.new('RGBA', (1000, 1000), bg_color)
     
     draw = ImageDraw.Draw(img)
     

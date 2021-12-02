@@ -18,7 +18,6 @@ import random
 FONT_NAME = 'Courier'
 HEIGHT = 2160
 WIDTH = 3840
-BG_COLOR = '#89CFF0'
 
 # main_canvas = Image.new(mode='RGBA', color=BG_COLOR, size=(WIDTH, HEIGHT))
 
@@ -121,6 +120,7 @@ def save_resized_fish():
 def create_fishtopia(**kwargs):
     '''Create fishtopia collage with amount of fish, default = 50'''
     global fishtopia_collage
+    global bg_color
 
     # Disable image buttons; Enable collage buttons
     save_orig_btn.config(state=tk.DISABLED)
@@ -129,7 +129,7 @@ def create_fishtopia(**kwargs):
     collage_add_btn.config(state=tk.NORMAL)
     collage_save_btn.config(state=tk.NORMAL)
 
-    fishtopia_collage = Image.new('RGBA', (WIDTH, HEIGHT), color=BG_COLOR)
+    fishtopia_collage = Image.new('RGBA', (WIDTH, HEIGHT), color=bg_color)
 
     if 'amount' in kwargs:
         try:
@@ -208,6 +208,14 @@ def save_fishtopia():
 # ---------------------------- main ------------------------------- #
 
 if __name__=='__main__':
+    
+    # Global variables
+    orig_img_to_save = None
+    trans_img_to_save = None
+    resized_img_to_save = None
+    fishtopia_collage = None
+    bg_color = '#89CFF0'
+
     root = tk.Tk()
     root.title('Iffy Fishies')
     root.config(padx=50, pady=25)
@@ -223,13 +231,7 @@ if __name__=='__main__':
     preview_canvas.grid(column=0, row=1)
     canvas_image = preview_canvas.create_image(250, 250, image=None, anchor='center')
     
-    # Global variables
-    orig_img_to_save = None
-    trans_img_to_save = None
-    resized_img_to_save = None
-    fishtopia_collage = None
-
-    # Button frame
+    # Frame for button interface
     button_frame = tk.Frame(root)
     button_frame.grid(column=0, row=2)
     
@@ -253,20 +255,36 @@ if __name__=='__main__':
     collage_btns_frame  = tk.Frame(button_frame)
     collage_btns_frame.grid(column=1, row=0)
 
+    # Background color button frame
+    bg_color_btns_frame = tk.Frame(collage_btns_frame)
+    bg_color_btns_frame.grid(column=0, row=0)
+
+    transparent_btn = tk.Button(bg_color_btns_frame, text=' X ', bd=3, command=None)
+    transparent_btn.grid(column=0, row=0, padx=10, pady=5, sticky='nesw')
+
+    white_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#FFFFFF', bd=3, command=None)
+    white_btn.grid(column=1, row=0, padx=10, pady=5, sticky='nesw')
+
+    blue_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#89CFF0', bd=3, command=None)
+    blue_btn.grid(column=2, row=0,  padx=10, pady=5, sticky='nesw')
+
+    black_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#000000', bd=3, command=None)
+    black_btn.grid(column=3, row=0,  padx=10, pady=5, sticky='nesw')
+
     # Create fishtopia frame
     collage_create_btns_frame = tk.Frame(collage_btns_frame)
-    collage_create_btns_frame.grid(column=0, row=0)
+    collage_create_btns_frame.grid(column=0, row=1)
 
     collage_create_btn = tk.Button(collage_create_btns_frame, text='Create Fishtopia', font=(FONT_NAME, 11, 'normal'), command=create_collage)
-    collage_create_btn.grid(column=0, row=0, padx=5, pady=5, sticky='nesw')
+    collage_create_btn.grid(column=0, row=1, padx=5, pady=5, sticky='nesw')
 
     starting_fishies = tk.StringVar()
     starting_fishies_entry = tk.Entry(collage_create_btns_frame, textvariable=starting_fishies, bd=5, width=4)
-    starting_fishies_entry.grid(column=1, row=0, sticky='nesw')
+    starting_fishies_entry.grid(column=1, row=1, sticky='nesw')
 
     # Add fishies frame
     collage_add_btn_frame = tk.Frame(collage_btns_frame)
-    collage_add_btn_frame.grid(column=0, row=1, sticky='nesw')
+    collage_add_btn_frame.grid(column=0, row=2, sticky='nesw')
 
     collage_add_btn = tk.Button(collage_add_btn_frame, text='Add Fishies', font=(FONT_NAME, 11, 'normal'), command=add_to_fishtopia, state=tk.DISABLED)
     collage_add_btn.grid(column=0, row=0, padx=5, pady=5, sticky='nesw')
@@ -276,6 +294,6 @@ if __name__=='__main__':
     add_fishies_entry.grid(column=1, row=0, sticky='nesw')
 
     collage_save_btn = tk.Button(collage_btns_frame, text='Save Fishtopia', font=(FONT_NAME, 11, 'normal'), command=save_fishtopia, state=tk.DISABLED)
-    collage_save_btn.grid(column=0, row=2, padx=5, pady=5, sticky='nesw')
+    collage_save_btn.grid(column=0, row=3, padx=5, pady=5, sticky='nesw')
 
     root.mainloop()
