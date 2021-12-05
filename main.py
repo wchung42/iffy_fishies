@@ -9,7 +9,7 @@
 
 '''
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageChops
 from generate_fish import *
 import tkinter as tk
 from tkinter import filedialog
@@ -23,6 +23,9 @@ WIDTH = 3840
 
 # ---------------------------- Iffy Fishy Functions ------------------------------- #
 def create_fish():
+    global default_img
+    global default_img_transformed
+    global default_img_resized
     global orig_img_to_save
     global trans_img_to_save
     global resized_img_to_save
@@ -41,15 +44,16 @@ def create_fish():
     orig_img_to_save = original_fish_img
     trans_img_to_save = transformed_fish_img
     resized_img_to_save = resized_transformed_fish_img
+
+    default_img = original_fish_img
+    default_img_transformed = transformed_fish_img
+    default_img_resized = resized_transformed_fish_img
     
     return resized_transformed_fish_img
 
 
 def display_fish(fish):
     '''Resized preview canvas and displays fish'''
-    global orig_img_to_save
-    global trans_img_to_save    
-
     # resize canvas for single fish
     preview_canvas.config(width=500, height=500)
 
@@ -65,6 +69,9 @@ def display_fish(fish):
 def create_and_display():
     '''Driver function for creating and displaying fish'''
     global canvas_image
+    global mode
+
+    mode = 'image'
 
     # Enable image buttons; Disable collage buttons
     save_orig_btn.config(state=tk.NORMAL)
@@ -120,7 +127,8 @@ def save_resized_fish():
 def create_fishtopia(**kwargs):
     '''Create fishtopia collage with amount of fish, default = 50'''
     global fishtopia_collage
-    global bg_color
+    global default_fishtopia_collage
+    global mode
 
     # Disable image buttons; Enable collage buttons
     save_orig_btn.config(state=tk.DISABLED)
@@ -129,7 +137,7 @@ def create_fishtopia(**kwargs):
     collage_add_btn.config(state=tk.NORMAL)
     collage_save_btn.config(state=tk.NORMAL)
 
-    fishtopia_collage = Image.new('RGBA', (WIDTH, HEIGHT), color=bg_color)
+    fishtopia_collage = Image.new('RGBA', (WIDTH, HEIGHT), color=(0, 0, 0, 0))
 
     if 'amount' in kwargs:
         try:
@@ -145,7 +153,10 @@ def create_fishtopia(**kwargs):
         cors = (random.randrange(5, 3700), random.randrange(5, 2000))
         fishtopia_collage.alpha_composite(fish, dest=cors)
 
-    preview = ImageTk.PhotoImage(fishtopia_collage.resize((960, 540), Image.ANTIALIAS))
+    default_fishtopia_collage = fishtopia_collage
+
+    resized_fishtopia_collage = fishtopia_collage.resize((960, 540))
+    preview = ImageTk.PhotoImage(resized_fishtopia_collage, Image.ANTIALIAS)
     root.preview = preview # save image data to local variable to bypass bug with photoimage
     preview_canvas.itemconfig(canvas_image, image=preview)
 
@@ -153,6 +164,9 @@ def create_fishtopia(**kwargs):
 def create_collage():
     '''Driver function for create_fishtopia'''
     global canvas_image
+    global mode
+
+    mode = 'collage'
 
     preview_canvas.delete('all')
     preview_canvas.config(width=960, height=540)
@@ -205,16 +219,113 @@ def save_fishtopia():
     fishtopia_collage.save(filename)
 
 
+def update_preview(color):
+    global default_img_resized
+    global fishtopia_collage
+    global mode
+
+    if color is None:
+        color = root.cget('bg')
+
+    preview_canvas.config(bg=color)
+    
+
+def change_bg_color_single(color):
+    '''Changes background color of image'''
+    global default_img
+    global default_img_transformed
+    global default_img_resized
+    global orig_img_to_save
+    global trans_img_to_save
+    global resized_img_to_save
+
+    before_images = [default_img, default_img_transformed, default_img_resized]
+    after_images = []
+
+    if color is None:
+        orig_img_to_save, trans_img_to_save, resized_img_to_save = before_images
+        return
+
+    for image in before_images:
+        width, height = image.size
+        new_bg = Image.new('RGBA', (width, height), color=color)
+        
+        image = Image.alpha_composite(new_bg, image)
+        after_images.append(image)
+
+    orig_img_to_save, trans_img_to_save, resized_img_to_save = after_images
+
+
+def change_bg_color_collage(color):
+    '''Changes background color of collage'''
+    global default_fishtopia_collage
+    global fishtopia_collage
+
+    if color is None:
+        fishtopia_collage = default_fishtopia_collage
+        return
+
+    width, height = fishtopia_collage.size
+    new_bg = Image.new('RGBA', (width, height), color=color)
+    fishtopia_collage = Image.alpha_composite(new_bg, default_fishtopia_collage)
+
+
+def change_bg_transparent():
+    global mode
+    color = None
+    if mode == 'image':
+        change_bg_color_single(color)
+    elif mode == 'collage':
+        change_bg_color_collage(color)
+
+    update_preview(color)
+
+
+def change_bg_white():
+    global mode
+    color = '#FFFFFF'
+    if mode == 'image':
+        change_bg_color_single(color)
+    elif mode == 'collage':
+        change_bg_color_collage(color)
+    
+    update_preview(color)
+
+
+def change_bg_blue():
+    global mode
+    color = '#89CFF0'
+    if mode == 'image':
+        change_bg_color_single(color)
+    elif mode == 'collage':
+        change_bg_color_collage(color)
+   
+    update_preview(color)
+
+
+def change_bg_black():
+    global mode
+    color = '#000000'
+    if mode == 'image':
+        change_bg_color_single(color)
+    elif mode == 'collage':
+        change_bg_color_collage(color)
+
+    update_preview(color)
+
 # ---------------------------- main ------------------------------- #
 
 if __name__=='__main__':
-    
     # Global variables
+    default_img = None
+    default_img_transformed = None
+    default_img_resized = None
     orig_img_to_save = None
     trans_img_to_save = None
     resized_img_to_save = None
+    default_fishtopia_collage = None
     fishtopia_collage = None
-    bg_color = '#89CFF0'
+    mode = 'image'
 
     root = tk.Tk()
     root.title('Iffy Fishies')
@@ -259,16 +370,16 @@ if __name__=='__main__':
     bg_color_btns_frame = tk.Frame(collage_btns_frame)
     bg_color_btns_frame.grid(column=0, row=0)
 
-    transparent_btn = tk.Button(bg_color_btns_frame, text=' X ', bd=3, command=None)
+    transparent_btn = tk.Button(bg_color_btns_frame, text=' X ', bd=3, command=change_bg_transparent)
     transparent_btn.grid(column=0, row=0, padx=10, pady=5, sticky='nesw')
 
-    white_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#FFFFFF', bd=3, command=None)
+    white_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#FFFFFF', bd=3, command=change_bg_white)
     white_btn.grid(column=1, row=0, padx=10, pady=5, sticky='nesw')
 
-    blue_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#89CFF0', bd=3, command=None)
+    blue_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#89CFF0', bd=3, command=change_bg_blue)
     blue_btn.grid(column=2, row=0,  padx=10, pady=5, sticky='nesw')
 
-    black_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#000000', bd=3, command=None)
+    black_btn = tk.Button(bg_color_btns_frame, text='   ', bg='#000000', bd=3, command=change_bg_black)
     black_btn.grid(column=3, row=0,  padx=10, pady=5, sticky='nesw')
 
     # Create fishtopia frame
