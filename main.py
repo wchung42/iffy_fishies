@@ -286,11 +286,21 @@ if __name__=='__main__':
     root.title('Iffy Fishies')
     root.config(padx=50, pady=25)
 
-    logo_img = Image.open('./images/logo.png')
-    logo_width, logo_height = logo_img.size
-    logo = ImageTk.PhotoImage(logo_img.resize((round(logo_width/1.5), round(logo_height/1.5)), resample=Image.ANTIALIAS))
-    logo_label = tk.Label(image=logo)
+    # Logos
+    logo_frame = tk.Frame(root)
+    logo_frame.grid(column=0, row=0)
+
+    logo = Image.open('./images/logo.png')
+    logo_width, logo_height = logo.size
+    logo_pi = ImageTk.PhotoImage(logo.resize((round(logo_width/2), round(logo_height/2)), resample=Image.ANTIALIAS))
+    logo_label = tk.Label(logo_frame, image=logo_pi)
     logo_label.grid(column=0, row=0)
+
+    teamseas_logo = Image.open('./images/teamseas-logo.png')
+    teamseas_logo_width, teamseas_logo_height = teamseas_logo.size
+    teamseas_logo_pi = ImageTk.PhotoImage(teamseas_logo.resize((round(logo_width/2.5), round(logo_height/2.5)), resample=Image.ANTIALIAS))
+    teamseas_logo_label = tk.Label(logo_frame, image=teamseas_logo_pi)
+    teamseas_logo_label.grid(column=1, row=0)
 
     # Initialize preview canvas with default screen
     preview_canvas = tk.Canvas(width=500, height=500)
