@@ -1,5 +1,7 @@
 /teamseas
 /__pycache__
+/venv
 /images
 tangram_fish.py
 og_fish_functions.py
+test_designs.py 

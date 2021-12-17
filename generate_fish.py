@@ -37,8 +37,8 @@ def calc_scale_multiplier(val):
     
     multiplier = val/1000
     
-    if multiplier < 0.2:    
-        return 0.2
+    if multiplier < 0.075:    
+        return 0.075
     else:
         return multiplier
 
