@@ -46,8 +46,6 @@ def create_fish(*args):
 
 def display_fish(fish):
     '''Resized preview canvas and displays fish'''
-    # resize canvas for single fish
-
     # resize to fit 500x500 canvas
     fish_img_width, fish_img_height = fish.size
     resized_fish_img = fish.resize((round(fish_img_width/1.5), round(fish_img_height/1.5)), Image.ANTIALIAS)
@@ -66,10 +64,6 @@ def create_and_display():
     save_orig_button.config(state=tk.NORMAL)
     save_transformed_button.config(state=tk.NORMAL)
     save_resized_button.config(state=tk.NORMAL)
-
-    # preview_canvas.delete('all')
-    # preview_canvas.config(width=500, height=500)
-    # canvas_image = preview_canvas.create_image(250, 250, image=None, anchor='center')
 
     create_fish()
     display_fish(default_img_resized)
@@ -153,10 +147,6 @@ def create_fishtopia(**kwargs):
 
 def display_collage():
     '''Displays the fishtopia collage on screen'''
-    # preview_canvas.delete('all')
-    # preview_canvas.config(width=960, height=540)
-    # canvas_image = preview_canvas.create_image(0, 0, image=None, anchor='nw')
-
     resized_fishtopia_collage = fishtopia_collage.resize((960, 540))
     preview = ImageTk.PhotoImage(resized_fishtopia_collage, Image.ANTIALIAS)
     root.preview = preview # save image data to local variable to bypass bug with photoimage
@@ -167,12 +157,12 @@ def create_collage():
     '''Driver function for create_fishtopia'''
     # global canvas_image
     try:
-        num_fishies = int(starting_fishies.get())
+        num_fishies = int(num_starting_fish.get())
         create_fishtopia(amount=num_fishies)
     except ValueError:
         create_fishtopia()
     finally:
-        starting_fishies_entry.delete(0, tk.END)
+        starting_fish_entry.delete(0, tk.END)
 
     display_collage()
 
@@ -183,7 +173,7 @@ def add_to_fishtopia():
     global default_fishtopia_collage
 
     try:
-        num_fishies = int(num_fishies_to_add.get())
+        num_fishies = int(num_fish_to_add.get())
     except ValueError:
         add_fishies_entry.delete(0, tk.END)
         return
@@ -268,7 +258,7 @@ def update_live_counter():
     resp.raise_for_status()
     live_count = int(resp.json()['count'])
 
-    live_count_label.config(text=live_count)
+    live_count_label.config(text=f'${int(live_count):,}')
 
     root.after(10000, update_live_counter)
 
@@ -434,7 +424,7 @@ if __name__=='__main__':
     teamseas_logo_label.grid(column=1, row=0)
 
     # ---------------------------------- LIVE COUNTER -------------------------------------#
-    live_count_label = tk.Label(root, text=live_count, font=(FONT_NAME, 25, 'bold'))
+    live_count_label = tk.Label(root, text=f'${int(live_count):,}', font=(FONT_NAME, 25, 'normal'))
     live_count_label.grid(column=0, row=1, pady=5, columnspan=2)
     update_live_counter()
 
@@ -512,9 +502,9 @@ if __name__=='__main__':
     collage_create_btn = tk.Button(collage_create_buttons_frame, text='Create Fishtopia', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_collage)
     collage_create_btn.grid(column=0, row=1, padx=5, pady=5, sticky='ew')
 
-    starting_fishies = tk.StringVar()
-    starting_fishies_entry = tk.Entry(collage_create_buttons_frame, textvariable=starting_fishies, bd=3, width=3)
-    starting_fishies_entry.grid(column=1, row=1, sticky='ew')
+    num_starting_fish = tk.StringVar()
+    starting_fish_entry = tk.Entry(collage_create_buttons_frame, textvariable=num_starting_fish, bd=3, width=3)
+    starting_fish_entry.grid(column=1, row=1, sticky='ew')
 
     # Add fishies frame
     collage_add_button_frame = tk.Frame(collage_buttons_frame)
@@ -525,8 +515,8 @@ if __name__=='__main__':
     collage_add_button = tk.Button(collage_add_button_frame, text='Add Fishies', bd=3, font=(FONT_NAME, 10, 'normal'), command=add_to_fishtopia, state=tk.DISABLED)
     collage_add_button.grid(column=0, row=0, padx=5, pady=5, sticky='nesw')
 
-    num_fishies_to_add = tk.StringVar()
-    add_fishies_entry = tk.Entry(collage_add_button_frame, textvariable=num_fishies_to_add, bd=3, width=9)
+    num_fish_to_add = tk.StringVar()
+    add_fishies_entry = tk.Entry(collage_add_button_frame, textvariable=num_fish_to_add, bd=3, width=9)
     add_fishies_entry.grid(column=1, row=0, sticky='ew')
 
     collage_save_button = tk.Button(collage_buttons_frame, text='Save Fishtopia', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_fishtopia, state=tk.DISABLED)
