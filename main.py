@@ -7,7 +7,7 @@ IffyFishies
 from PIL import Image, ImageTk
 from generate_fish import *
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from tkinter.colorchooser import askcolor
 import random
 import requests
@@ -260,7 +260,7 @@ def update_live_counter():
 
     live_count_label.config(text=f'${int(live_count):,}')
 
-    root.after(10000, update_live_counter)
+    root.after(30000, update_live_counter)
 
 
 def create_live():
@@ -269,6 +269,8 @@ def create_live():
     global live_count
 
     live_image = Image.new('RGBA', (WIDTH, HEIGHT), color=None)
+
+    print(type(live_count))
 
     try:
         total_donated = int(live_count)
@@ -288,8 +290,14 @@ def create_live():
     resp = requests.get(url='https://tscache.com/lb_recent.json')
     resp.raise_for_status()
     current_donations = resp.json()['recent'][:10]
+
+    # show on preview canvas
+    resized_live_image = live_image.resize((960, 540))
+    preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
+    root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
+    preview_canvas.itemconfig(canvas_image, image=preview)
    
-    update_live_image()
+    #update_live_image()
         
 
 def update_live_image():
@@ -301,7 +309,7 @@ def update_live_image():
     resp.raise_for_status()
     new_donations = resp.json()['recent'][:10]
 
-    new_fish_to_add_sizes = [data['pounds'] for data in new_donations if data not in current_donations]
+    new_fish_to_add_sizes = [data['pounds'].replace(',', '') for data in new_donations if data not in current_donations]
 
     if len(new_fish_to_add_sizes) != 0:
         for fish_size in new_fish_to_add_sizes:
@@ -311,14 +319,14 @@ def update_live_image():
 
         print('Congrats, you have spawned new iffy fishies!')
     
+        # show on preview canvas
+        resized_live_image = live_image.resize((960, 540))
+        preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
+        root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
+        preview_canvas.itemconfig(canvas_image, image=preview)
+
     current_donations = new_donations
     
-    # show on canvas
-    resized_live_image = live_image.resize((960, 540))
-    preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
-    root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
-    preview_canvas.itemconfig(canvas_image, image=preview)
-
     # update every 30 seconds
     tk.after_id = root.after(30000, update_live_image)
 
@@ -326,6 +334,7 @@ def update_live_image():
 def live_driver():
     change_mode()
     create_live()
+    update_live_image()
 
 
 def stop_live():
@@ -386,6 +395,7 @@ def change_mode():
         collage_buttons_frame.grid_remove()
         live_image_save_button.grid(column=0, row=2, sticky='ew')
 
+    live_count_label.config(text=f'${live_count:,}')
     default_image = Image.new('RGBA', (960, 540), color=None)
     default_screen = ImageTk.PhotoImage(default_image, Image.ANTIALIAS)
     preview_canvas.itemconfig(canvas_image, image=default_screen)
