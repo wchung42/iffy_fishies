@@ -11,6 +11,7 @@ from tkinter import filedialog, messagebox
 from tkinter.colorchooser import askcolor
 import random
 import requests
+import datetime
 
 FONT_NAME = 'Helvetica'
 HEIGHT = 2160
@@ -317,18 +318,18 @@ def update_live_image():
             cors = (random.randrange(25, 3500), random.randrange(25, 1900))
             live_image.alpha_composite(fish, dest=cors)
 
-        print('Congrats, you have spawned new iffy fishies!')
-    
         # show on preview canvas
         resized_live_image = live_image.resize((960, 540))
         preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
         root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
         preview_canvas.itemconfig(canvas_image, image=preview)
 
+        print_message('Congrats, you have spawned new iffy fishies!')
+
     current_donations = new_donations
     
     # update every 30 seconds
-    tk.after_id = root.after(30000, update_live_image)
+    tk.live_after_id = root.after(30000, update_live_image)
 
 
 def live_driver():
@@ -339,14 +340,14 @@ def live_driver():
 
 def stop_live():
     try:
-        root.after_cancel(tk.after_id)
+        root.after_cancel(tk.live_after_id)
     except AttributeError:
         pass
     except ValueError:
         pass
     else:
         print('Live mode stopped.')
-        tk.after_id = None
+        tk.live_after_id = None
         return
 
 
@@ -374,7 +375,6 @@ def change_mode():
     global canvas_image
 
     current_mode = mode.get()
-
     if current_mode == 'image':
         stop_live()
         print('Initializing image mode...')
@@ -399,6 +399,14 @@ def change_mode():
     default_image = Image.new('RGBA', (960, 540), color=None)
     default_screen = ImageTk.PhotoImage(default_image, Image.ANTIALIAS)
     preview_canvas.itemconfig(canvas_image, image=default_screen)
+
+
+def print_message(text):
+    now = datetime.datetime.now()
+    timestamp_string = now.strftime('%H:%M')
+    print(updates_canvas.itemcget(updates_message_id, 'text'))
+    new_message = f'{timestamp_string} - {text}\n' + updates_canvas.itemcget(updates_message_id, 'text') 
+    updates_canvas.itemconfig(updates_message_id, text=new_message)   
 
 # ----------------------------------- MAIN -------------------------------------- #
 
@@ -444,7 +452,7 @@ if __name__=='__main__':
     canvas_image = preview_canvas.create_image(480, 270, image=None, anchor='center')
     
     # ---------------------------------- CONTROL PANEL -------------------------------------#
-    control_panel_frame = tk.Frame(root)
+    control_panel_frame = tk.Frame(root, width=200)
     control_panel_frame.grid(column=0, row=2, padx=(0, 10), sticky='n')
     control_panel_frame.grid_rowconfigure(0, weight=1)
     control_panel_frame.grid_columnconfigure(0, weight=1)
@@ -534,5 +542,13 @@ if __name__=='__main__':
 
     # SAVE LIVE IMAGE BUTTON
     live_image_save_button = tk.Button(control_panel_frame, text='Save Image', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_live_image)
+
+    # ------------------------------------- UPDATE MESSAGES ------------------------------ #
+    updates_canvas = tk.Canvas(control_panel_frame)
+    updates_canvas.config(width=200, height=300, highlightbackground='black', highlightcolor='black', highlightthickness=1)
+    now = datetime.datetime.now()
+    timestamp_string = now.strftime('%H:%M')
+    updates_message_id = updates_canvas.create_text(5, 5, text=f'{timestamp_string} - Welcome to IffyFishies!', width=200, fill='black', font=('Courier', 8, 'normal'), anchor='nw')
+    updates_canvas.grid(row=3, column=0, pady=5, sticky='nswe')
 
     root.mainloop()
