@@ -5,6 +5,7 @@ IffyFishies
 '''
 
 from PIL import Image, ImageTk
+from requests.models import HTTPError
 from generate_fish import *
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -255,11 +256,16 @@ def update_live_counter():
     global live_count
 
     # get total amount donated
-    resp = requests.get(url='https://tscache.com/donation_total.json')
-    resp.raise_for_status()
-    live_count = int(resp.json()['count'])
+    try:
+        resp = requests.get(url='https://tscache.com/donation_total.json')
+    except requests.ConnectionError:
+        print_message('No internet connection found...')
+    except HTTPError:
+        print_message('Oh no...something went wrong. Please contact dev...')
+    else:
+        live_count = int(resp.json()['count'])
 
-    live_count_label.config(text=f'${int(live_count):,}')
+        live_count_label.config(text=f'${int(live_count):,}')
 
     tk.update_counter_after_id = root.after(30000, update_live_counter)
 
@@ -267,35 +273,32 @@ def update_live_counter():
 def create_live():
     global current_donations
     global live_image
-    global live_count
 
     live_image = Image.new('RGBA', (WIDTH, HEIGHT), color=None)
+    total_donated = int(live_count)
+    live_count_label.config(text=live_count)
 
-    try:
-        total_donated = int(live_count)
-    except TypeError:
-        print('Invalid type.')
-    else:
-        live_count_label.config(text=live_count)
-
-        # populate image
-        for _ in range(0, total_donated, 2000000):
-            fish = create_fish(100)
-            coors = (random.randrange(25, 3500), random.randrange(25, 1900))
-            live_image.alpha_composite(fish, dest=coors)
+    # populate image
+    for _ in range(0, total_donated, 2000000):
+        fish = create_fish(100)
+        coors = (random.randrange(25, 3500), random.randrange(25, 1900))
+        live_image.alpha_composite(fish, dest=coors)
 
     # get donation
-    resp = requests.get(url='https://tscache.com/lb_recent.json')
-    resp.raise_for_status()
-    current_donations = resp.json()['recent'][:10]
+    try:
+        resp = requests.get(url='https://tscache.com/lb_recent.json')
+    except requests.ConnectionError:
+        print_message('No internet connection found...')
+    except HTTPError:
+        print_message('Oh no...something went wrong. Please contact dev...')
+    else:
+        current_donations = resp.json()['recent'][:10]
 
-    # show on preview canvas
-    resized_live_image = live_image.resize((960, 540))
-    preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
-    root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
-    preview_canvas.itemconfig(canvas_image, image=preview)
-   
-    #update_live_image()
+        # show on preview canvas
+        resized_live_image = live_image.resize((960, 540))
+        preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
+        root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
+        preview_canvas.itemconfig(canvas_image, image=preview)
         
 
 def update_live_image():
@@ -375,20 +378,20 @@ def change_mode():
     current_mode = mode.get()
     if current_mode == 'image':
         stop_live()
-        print('Initializing image mode...')
+        # print('Initializing image mode...')
         collage_buttons_frame.grid_remove()
         live_image_save_button.grid_remove()
         img_button_frame.grid()
     elif current_mode == 'collage':
         stop_live()
-        print('Initializing collage mode...')
+        # print('Initializing collage mode...')
         img_button_frame.grid_remove()
         live_image_save_button.grid_remove()
         collage_buttons_frame.grid(column=0, row=2, sticky='ew')
         collage_buttons_frame.rowconfigure(0, weight=1)
         collage_buttons_frame.columnconfigure(0, weight=1)
     else:
-        print('Initializing live mode...')
+        # print('Initializing live mode...')
         img_button_frame.grid_remove()
         collage_buttons_frame.grid_remove()
         live_image_save_button.grid(column=0, row=2, sticky='ew')
@@ -515,7 +518,7 @@ if __name__=='__main__':
     collage_create_buttons_frame.grid_rowconfigure(0, weight=1)
     collage_create_buttons_frame.grid_columnconfigure(0, weight=1)
 
-    collage_create_btn = tk.Button(collage_create_buttons_frame, text='Create Fishtopia', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_collage)
+    collage_create_btn = tk.Button(collage_create_buttons_frame, text='Create Collage', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_collage)
     collage_create_btn.grid(column=0, row=1, padx=5, pady=5, sticky='ew')
 
     num_starting_fish = tk.StringVar()
@@ -528,14 +531,14 @@ if __name__=='__main__':
     collage_add_button_frame.grid_rowconfigure(0, weight=1)
     collage_add_button_frame.grid_columnconfigure(0, weight=1)
 
-    collage_add_button = tk.Button(collage_add_button_frame, text='Add Fishies', bd=3, font=(FONT_NAME, 10, 'normal'), command=add_to_fishtopia, state=tk.DISABLED)
+    collage_add_button = tk.Button(collage_add_button_frame, text='Add Fish', bd=3, font=(FONT_NAME, 10, 'normal'), command=add_to_fishtopia, state=tk.DISABLED)
     collage_add_button.grid(column=0, row=0, padx=5, pady=5, sticky='nesw')
 
     num_fish_to_add = tk.StringVar()
     add_fishies_entry = tk.Entry(collage_add_button_frame, textvariable=num_fish_to_add, bd=3, width=9)
     add_fishies_entry.grid(column=1, row=0, sticky='ew')
 
-    collage_save_button = tk.Button(collage_buttons_frame, text='Save Fishtopia', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_fishtopia, state=tk.DISABLED)
+    collage_save_button = tk.Button(collage_buttons_frame, text='Save Collage', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_fishtopia, state=tk.DISABLED)
     collage_save_button.grid(column=0, row=3, padx=5, pady=5, sticky='nesw')
 
     # SAVE LIVE IMAGE BUTTON
