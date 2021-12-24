@@ -261,7 +261,7 @@ def update_live_counter():
 
     live_count_label.config(text=f'${int(live_count):,}')
 
-    root.after(30000, update_live_counter)
+    tk.update_counter_after_id = root.after(30000, update_live_counter)
 
 
 def create_live():
@@ -271,17 +271,14 @@ def create_live():
 
     live_image = Image.new('RGBA', (WIDTH, HEIGHT), color=None)
 
-    print(type(live_count))
-
     try:
         total_donated = int(live_count)
     except TypeError:
         print('Invalid type.')
     else:
         live_count_label.config(text=live_count)
-        # populate image
-        print('Populating the sea...')
 
+        # populate image
         for _ in range(0, total_donated, 2000000):
             fish = create_fish(100)
             coors = (random.randrange(25, 3500), random.randrange(25, 1900))
@@ -324,8 +321,7 @@ def update_live_image():
         root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
         preview_canvas.itemconfig(canvas_image, image=preview)
 
-        print_message('Congrats, you have spawned new iffy fishies!')
-
+        # print_message('Congrats, you have spawned new iffy fishies!')
     current_donations = new_donations
     
     # update every 30 seconds
@@ -333,6 +329,8 @@ def update_live_image():
 
 
 def live_driver():
+    root.after_cancel(tk.update_counter_after_id)
+    update_live_counter()
     change_mode()
     create_live()
     update_live_image()
@@ -346,7 +344,7 @@ def stop_live():
     except ValueError:
         pass
     else:
-        print('Live mode stopped.')
+        # print('Live mode stopped.')
         tk.live_after_id = None
         return
 
