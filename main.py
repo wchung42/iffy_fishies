@@ -3,9 +3,9 @@ IffyFishies
  - Coding 30 million fish for #TeamSeas
 
 '''
-
+from pathlib import Path
 from PIL import Image, ImageTk
-from requests.models import HTTPError
+from requests.models import HTTPError, ConnectionError
 from generate_fish import *
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -28,7 +28,7 @@ def create_fish(*args):
     if len(args) != 0:
         size_multiplier = calc_scale_multiplier(int(args[0]))
     else:
-        size_multiplier = calc_scale_multiplier(random.randrange(100, 751, 5))
+        size_multiplier = calc_scale_multiplier(random.randrange(50, 1001, 5))
 
     fish_funcs = [draw_fish_design_1(), draw_fish_design_2(), draw_fish_design_3()]
     chosen_fish_func = random.choice(fish_funcs) # choose random fish function
@@ -258,7 +258,7 @@ def update_live_counter():
     # get total amount donated
     try:
         resp = requests.get(url='https://tscache.com/donation_total.json')
-    except requests.ConnectionError:
+    except ConnectionError:
         print_message('No internet connection found...')
     except HTTPError:
         print_message('Oh no...something went wrong. Please contact dev...')
@@ -287,7 +287,7 @@ def create_live():
     # get donation
     try:
         resp = requests.get(url='https://tscache.com/lb_recent.json')
-    except requests.ConnectionError:
+    except ConnectionError:
         print_message('No internet connection found...')
     except HTTPError:
         print_message('Oh no...something went wrong. Please contact dev...')
@@ -323,6 +323,13 @@ def update_live_image():
         preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
         root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
         preview_canvas.itemconfig(canvas_image, image=preview)
+
+        # AUTO SAVE
+        path = Path('.\\images\\12-25-2021_01-01-2022')
+        path.mkdir(exist_ok=True)
+        now = datetime.datetime.now()
+        filename = now.strftime('%d%m%Y-%H%M%S') + f'-{live_count}'
+        live_image.save(str(path/f'{filename}.png'))
 
         # print update message
         print_message('Congrats, you have spawned new iffy fishies!')

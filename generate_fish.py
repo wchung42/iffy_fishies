@@ -32,13 +32,13 @@ def resize(img, size_multiplier=1):
 
 def calc_scale_multiplier(val):
     '''Convert given val to a scaling multiplier'''
-    if val >= 750:
-        val = 750
+    # if val >= 750:
+    #     val = 750
     
     multiplier = val/1000
     
-    if multiplier < 0.075:    
-        return 0.075
+    if multiplier < 0.05:    
+        return 0.05
     else:
         return multiplier
 
