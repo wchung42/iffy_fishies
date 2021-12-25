@@ -324,7 +324,8 @@ def update_live_image():
         root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
         preview_canvas.itemconfig(canvas_image, image=preview)
 
-        # print_message('Congrats, you have spawned new iffy fishies!')
+        # print update message
+        print_message('Congrats, you have spawned new iffy fishies!')
     current_donations = new_donations
     
     # update every 30 seconds
@@ -337,6 +338,7 @@ def live_driver():
     change_mode()
     create_live()
     update_live_image()
+    live_count_label.config(text=f'${live_count:,}') # fixes bug where starting live_after removes formatting from live counter
 
 
 def stop_live():
@@ -381,12 +383,17 @@ def change_mode():
         # print('Initializing image mode...')
         collage_buttons_frame.grid_remove()
         live_image_save_button.grid_remove()
+        collage_add_button.config(state=tk.DISABLED)
+        collage_save_button.config(state=tk.DISABLED)
         img_button_frame.grid()
     elif current_mode == 'collage':
         stop_live()
         # print('Initializing collage mode...')
         img_button_frame.grid_remove()
         live_image_save_button.grid_remove()
+        save_orig_button.config(state=tk.DISABLED)
+        save_resized_button.config(state=tk.DISABLED)
+        save_transformed_button.config(state=tk.DISABLED)
         collage_buttons_frame.grid(column=0, row=2, sticky='ew')
         collage_buttons_frame.rowconfigure(0, weight=1)
         collage_buttons_frame.columnconfigure(0, weight=1)
@@ -468,7 +475,7 @@ if __name__=='__main__':
     
     # Frame for single fish image related functions
     img_button_frame = tk.Frame(buttons_frame)
-    fish_button = tk.Button(img_button_frame, text='Create Fish', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_and_display)
+    create_fish_button = tk.Button(img_button_frame, text='Create Fish', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_and_display)
     save_orig_button = tk.Button(img_button_frame, text='Save Original', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_orig_fish, state=tk.DISABLED)
     save_transformed_button = tk.Button(img_button_frame, text='Save Transformed', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_trans_fish, state=tk.DISABLED)
     save_resized_button = tk.Button(img_button_frame, text='Save Resized', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_resized_fish, state=tk.DISABLED)
@@ -478,7 +485,7 @@ if __name__=='__main__':
 
     # Create collage frame
     collage_create_buttons_frame = tk.Frame(collage_buttons_frame)
-    collage_create_btn = tk.Button(collage_create_buttons_frame, text='Create Collage', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_collage)
+    collage_create_button = tk.Button(collage_create_buttons_frame, text='Create Collage', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_collage)
     num_starting_fish = tk.StringVar()
     starting_fish_entry = tk.Entry(collage_create_buttons_frame, textvariable=num_starting_fish, bd=3, width=3)
     
@@ -518,21 +525,21 @@ if __name__=='__main__':
     buttons_frame.grid_propagate(0)
 
     mode_frame.grid(column=0, row=0, pady=2, sticky='n')
-    image_mode.grid(column=0, row=0, padx=3)
-    collage_mode.grid(column=1, row=0, padx=3)
-    live_mode.grid(column=2, row=0, padx=3)
+    image_mode.grid(column=0, row=0, padx=5)
+    collage_mode.grid(column=1, row=0, padx=5)
+    live_mode.grid(column=2, row=0, padx=5)
 
     bg_color_buttons_frame.grid(column=0, row=1, pady=3, sticky='n')
-    transparent_button.grid(column=0, row=0, padx=5)
-    white_button.grid(column=1, row=0, padx=7)
-    blue_button.grid(column=2, row=0,  padx=7)
-    black_button.grid(column=3, row=0,  padx=7)
+    transparent_button.grid(column=0, row=0, padx=6)
+    white_button.grid(column=1, row=0, padx=6)
+    blue_button.grid(column=2, row=0,  padx=6)
+    black_button.grid(column=3, row=0,  padx=6)
     custom_color_button.grid(column=4, row=0,  padx=7)
 
     img_button_frame.grid(column=0, row=2, sticky='ew')
     img_button_frame.grid_rowconfigure(0, weight=1)
     img_button_frame.grid_columnconfigure(0, weight=1)
-    fish_button.grid(column=0, row=0, pady=2, sticky='ew')
+    create_fish_button.grid(column=0, row=0, pady=2, sticky='ew')
     save_orig_button.grid(column=0, row=1, pady=2, sticky='ew')
     save_transformed_button.grid(column=0, row=2, pady=2, sticky='ew')
     save_resized_button.grid(column=0, row=3, pady=2, sticky='ew')
@@ -540,7 +547,7 @@ if __name__=='__main__':
     collage_create_buttons_frame.grid(column=0, row=1, sticky='new')
     collage_create_buttons_frame.grid_rowconfigure(0, weight=1)
     collage_create_buttons_frame.grid_columnconfigure(0, weight=1)
-    collage_create_btn.grid(column=0, row=1, padx=2, pady=2, sticky='ew')
+    collage_create_button.grid(column=0, row=1, padx=2, pady=2, sticky='ew')
     starting_fish_entry.grid(column=1, row=1, sticky='ew')
     collage_add_button_frame.grid(column=0, row=2, sticky='new')
     collage_add_button_frame.grid_rowconfigure(0, weight=1)
