@@ -412,7 +412,6 @@ def change_mode():
 def print_message(text):
     now = datetime.datetime.now()
     timestamp_string = now.strftime('%H:%M')
-    print(updates_canvas.itemcget(updates_message_id, 'text'))
     new_message = f'{timestamp_string} - {text}\n' + updates_canvas.itemcget(updates_message_id, 'text') 
     updates_canvas.itemconfig(updates_message_id, text=new_message)   
 
