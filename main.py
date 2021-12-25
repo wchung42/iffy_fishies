@@ -394,7 +394,7 @@ def change_mode():
         # print('Initializing live mode...')
         img_button_frame.grid_remove()
         collage_buttons_frame.grid_remove()
-        live_image_save_button.grid(column=0, row=2, sticky='ew')
+        live_image_save_button.grid(column=0, row=2, pady=2, sticky='ew')
 
     live_count_label.config(text=f'${live_count:,}')
     default_image = Image.new('RGBA', (960, 540), color=None)
@@ -428,128 +428,126 @@ if __name__=='__main__':
 
     # Logos
     logo_frame = tk.Frame(root)
-    logo_frame.grid(column=0, row=0, columnspan=2, pady=(0, 15))
-
+    
     logo = Image.open('./images/logo.png')
     logo_width, logo_height = logo.size
     logo_pi = ImageTk.PhotoImage(logo.resize((round(logo_width/2), round(logo_height/2)), resample=Image.ANTIALIAS))
     logo_label = tk.Label(logo_frame, image=logo_pi)
-    logo_label.grid(column=0, row=0)
-
+    
     teamseas_logo = Image.open('./images/teamseas-logo.png')
     teamseas_logo_width, teamseas_logo_height = teamseas_logo.size
     teamseas_logo_pi = ImageTk.PhotoImage(teamseas_logo.resize((round(logo_width/2.5), round(logo_height/2.5)), resample=Image.ANTIALIAS))
     teamseas_logo_label = tk.Label(logo_frame, image=teamseas_logo_pi)
-    teamseas_logo_label.grid(column=1, row=0)
-
+    
     # ---------------------------------- LIVE COUNTER -------------------------------------#
     live_count_label = tk.Label(root, text=f'${int(live_count):,}', font=(FONT_NAME, 25, 'normal'))
-    live_count_label.grid(column=0, row=1, pady=5, columnspan=2)
     update_live_counter()
 
     # ---------------------------------- PREVIEW SCREEN -------------------------------------#
     preview_canvas = tk.Canvas(width=960, height=540, bd=2, highlightthickness=1, highlightbackground='black')
-    preview_canvas.grid(column=1, row=2)
     canvas_image = preview_canvas.create_image(480, 270, image=None, anchor='center')
     
     # ---------------------------------- CONTROL PANEL -------------------------------------#
-    control_panel_frame = tk.Frame(root, width=200)
-    control_panel_frame.grid(column=0, row=2, padx=(0, 10), sticky='n')
-    control_panel_frame.grid_rowconfigure(0, weight=1)
-    control_panel_frame.grid_columnconfigure(0, weight=1)
-
+    control_panel_frame = tk.Frame(root, width=200) 
+    buttons_frame = tk.Frame(control_panel_frame, width=200, height=240, bd=5, highlightbackground='black', highlightcolor='black', highlightthickness=1)
+    
     # MODE SELECT CONTROLS
-    mode_frame = tk.Frame(control_panel_frame, pady=5)
-    mode_frame.grid(column=0, row=0)
-
+    mode_frame = tk.Frame(buttons_frame)
     mode = tk.StringVar(value='image')
     image_mode = tk.Radiobutton(mode_frame, text='Image', value='image', variable=mode, indicatoron=False, bd=3, width=6, command=change_mode)
-    image_mode.grid(column=0, row=0, padx=1)
-
     collage_mode = tk.Radiobutton(mode_frame, text='Collage', value='collage', variable=mode, indicatoron=False, bd=3, width=6, command=change_mode)
-    collage_mode.grid(column=1, row=0, padx=1)
-
     live_mode = tk.Radiobutton(mode_frame, text='Live', value='live', variable=mode, indicatoron=False, bd=3, width=6, command=live_driver)
-    live_mode.grid(column=2, row=0, padx=1)
-
+    
     # BACKGROUND COLOR CONTROLS
-    bg_color_buttons_frame = tk.Frame(control_panel_frame)
-    bg_color_buttons_frame.grid(column=0, row=1, pady=5)
-
+    bg_color_buttons_frame = tk.Frame(buttons_frame)
     transparent_button = tk.Button(bg_color_buttons_frame, text=' X ', bd=3, command=change_bg_transparent)
-    transparent_button.grid(column=0, row=0, padx=5, pady=5, sticky='nesw')
-
     white_button = tk.Button(bg_color_buttons_frame, text='   ', bg='#FFFFFF', bd=3, command=change_bg_white)
-    white_button.grid(column=1, row=0, padx=5, pady=5, sticky='nesw')
-
     blue_button = tk.Button(bg_color_buttons_frame, text='   ', bg='#89CFF0', bd=3, command=change_bg_blue)
-    blue_button.grid(column=2, row=0,  padx=5, pady=5, sticky='nesw')
-
     black_button = tk.Button(bg_color_buttons_frame, text='   ', bg='#000000', bd=3, command=change_bg_black)
-    black_button.grid(column=3, row=0,  padx=5, pady=5, sticky='nesw')
-
     custom_color_button = tk.Button(bg_color_buttons_frame, text='RGB', bd=3, command=change_bg_custom)
-    custom_color_button.grid(column=4, row=0,  padx=5, pady=5, sticky='nesw')
     
     # Frame for single fish image related functions
-    img_button_frame = tk.Frame(control_panel_frame)
-    img_button_frame.grid(column=0, row=2, sticky='ew')
-    img_button_frame.grid_rowconfigure(0, weight=1)
-    img_button_frame.grid_columnconfigure(0, weight=1)
-
+    img_button_frame = tk.Frame(buttons_frame)
     fish_button = tk.Button(img_button_frame, text='Create Fish', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_and_display)
-    fish_button.grid(column=0, row=0, pady=5, sticky='ew')
-
     save_orig_button = tk.Button(img_button_frame, text='Save Original', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_orig_fish, state=tk.DISABLED)
-    save_orig_button.grid(column=0, row=1, pady=5, sticky='ew')
-
     save_transformed_button = tk.Button(img_button_frame, text='Save Transformed', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_trans_fish, state=tk.DISABLED)
-    save_transformed_button.grid(column=0, row=2, pady=5, sticky='ew')
-
     save_resized_button = tk.Button(img_button_frame, text='Save Resized', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_resized_fish, state=tk.DISABLED)
-    save_resized_button.grid(column=0, row=3, pady=5, sticky='ew')
 
     # Frame for Fishtopia Collage buttons
-    collage_buttons_frame = tk.Frame(control_panel_frame)
+    collage_buttons_frame = tk.Frame(buttons_frame)
 
     # Create collage frame
     collage_create_buttons_frame = tk.Frame(collage_buttons_frame)
-    collage_create_buttons_frame.grid(column=0, row=1, sticky='ew')
-    collage_create_buttons_frame.grid_rowconfigure(0, weight=1)
-    collage_create_buttons_frame.grid_columnconfigure(0, weight=1)
-
     collage_create_btn = tk.Button(collage_create_buttons_frame, text='Create Collage', bd=3, font=(FONT_NAME, 10, 'normal'), command=create_collage)
-    collage_create_btn.grid(column=0, row=1, padx=5, pady=5, sticky='ew')
-
     num_starting_fish = tk.StringVar()
     starting_fish_entry = tk.Entry(collage_create_buttons_frame, textvariable=num_starting_fish, bd=3, width=3)
-    starting_fish_entry.grid(column=1, row=1, sticky='ew')
-
+    
     # Add fishies frame
     collage_add_button_frame = tk.Frame(collage_buttons_frame)
-    collage_add_button_frame.grid(column=0, row=2, sticky='ew')
-    collage_add_button_frame.grid_rowconfigure(0, weight=1)
-    collage_add_button_frame.grid_columnconfigure(0, weight=1)
-
     collage_add_button = tk.Button(collage_add_button_frame, text='Add Fish', bd=3, font=(FONT_NAME, 10, 'normal'), command=add_to_fishtopia, state=tk.DISABLED)
-    collage_add_button.grid(column=0, row=0, padx=5, pady=5, sticky='nesw')
-
     num_fish_to_add = tk.StringVar()
     add_fishies_entry = tk.Entry(collage_add_button_frame, textvariable=num_fish_to_add, bd=3, width=9)
-    add_fishies_entry.grid(column=1, row=0, sticky='ew')
 
     collage_save_button = tk.Button(collage_buttons_frame, text='Save Collage', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_fishtopia, state=tk.DISABLED)
-    collage_save_button.grid(column=0, row=3, padx=5, pady=5, sticky='nesw')
-
+    
     # SAVE LIVE IMAGE BUTTON
-    live_image_save_button = tk.Button(control_panel_frame, text='Save Image', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_live_image)
+    live_image_save_button = tk.Button(buttons_frame, text='Save Image', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_live_image)
 
-    # ------------------------------------- UPDATE MESSAGES ------------------------------ #
+    # ---------------------------------- UPDATE MESSAGES -------------------------------- #
     updates_canvas = tk.Canvas(control_panel_frame)
     updates_canvas.config(width=200, height=300, highlightbackground='black', highlightcolor='black', highlightthickness=1)
     now = datetime.datetime.now()
     timestamp_string = now.strftime('%H:%M')
     updates_message_id = updates_canvas.create_text(5, 5, text=f'{timestamp_string} - Welcome to IffyFishies!', width=200, fill='black', font=('Courier', 8, 'normal'), anchor='nw')
-    updates_canvas.grid(row=3, column=0, pady=5, sticky='nswe')
+    updates_canvas.grid(row=1, column=0, pady=5, sticky='nswe')
+
+    # ------------------------------------- LAYOUT --------------------------------------- #
+    logo_frame.grid(column=0, row=0, columnspan=2, pady=(0, 15))
+    logo_label.grid(column=0, row=0)
+
+    teamseas_logo_label.grid(column=1, row=0)
+    live_count_label.grid(column=0, row=1, pady=5, columnspan=2)
+    preview_canvas.grid(column=1, row=2)
+
+    control_panel_frame.grid(column=0, row=2, padx=(0, 10), sticky='n')
+    control_panel_frame.grid_rowconfigure(0, weight=1)
+    control_panel_frame.grid_columnconfigure(0, weight=1)
+
+    buttons_frame.grid(row=0, column=0, sticky='new')
+    buttons_frame.grid_columnconfigure(0, weight=1)
+    buttons_frame.grid_propagate(0)
+
+    mode_frame.grid(column=0, row=0, pady=2, sticky='n')
+    image_mode.grid(column=0, row=0, padx=3)
+    collage_mode.grid(column=1, row=0, padx=3)
+    live_mode.grid(column=2, row=0, padx=3)
+
+    bg_color_buttons_frame.grid(column=0, row=1, pady=3, sticky='n')
+    transparent_button.grid(column=0, row=0, padx=5)
+    white_button.grid(column=1, row=0, padx=7)
+    blue_button.grid(column=2, row=0,  padx=7)
+    black_button.grid(column=3, row=0,  padx=7)
+    custom_color_button.grid(column=4, row=0,  padx=7)
+
+    img_button_frame.grid(column=0, row=2, sticky='ew')
+    img_button_frame.grid_rowconfigure(0, weight=1)
+    img_button_frame.grid_columnconfigure(0, weight=1)
+    fish_button.grid(column=0, row=0, pady=2, sticky='ew')
+    save_orig_button.grid(column=0, row=1, pady=2, sticky='ew')
+    save_transformed_button.grid(column=0, row=2, pady=2, sticky='ew')
+    save_resized_button.grid(column=0, row=3, pady=2, sticky='ew')
+
+    collage_create_buttons_frame.grid(column=0, row=1, sticky='new')
+    collage_create_buttons_frame.grid_rowconfigure(0, weight=1)
+    collage_create_buttons_frame.grid_columnconfigure(0, weight=1)
+    collage_create_btn.grid(column=0, row=1, padx=2, pady=2, sticky='ew')
+    starting_fish_entry.grid(column=1, row=1, sticky='ew')
+    collage_add_button_frame.grid(column=0, row=2, sticky='new')
+    collage_add_button_frame.grid_rowconfigure(0, weight=1)
+    collage_add_button_frame.grid_columnconfigure(0, weight=1)
+    collage_add_button.grid(column=0, row=0, padx=2, pady=2, sticky='new')
+    add_fishies_entry.grid(column=1, row=0, sticky='ew')
+    collage_save_button.grid(column=0, row=3, padx=2, pady=2, sticky='new')
+
 
     root.mainloop()
