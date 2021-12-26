@@ -3,13 +3,14 @@ IffyFishies
  - Coding 30 million fish for #TeamSeas
 
 '''
-from pathlib import Path
+
 from PIL import Image, ImageTk
 from requests.models import HTTPError, ConnectionError
 from generate_fish import *
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 from tkinter.colorchooser import askcolor
+from pathlib import Path
 import random
 import requests
 import datetime
@@ -299,7 +300,8 @@ def create_live():
         preview = ImageTk.PhotoImage(resized_live_image, Image.ANTIALIAS)
         root.preview = preview # save image data to local variable to bypass bug with photoimage and gc
         preview_canvas.itemconfig(canvas_image, image=preview)
-        
+        save_live_image()
+
 
 def update_live_image():
     global current_donations
@@ -325,11 +327,7 @@ def update_live_image():
         preview_canvas.itemconfig(canvas_image, image=preview)
 
         # AUTO SAVE
-        path = Path('.\\images\\12-25-2021_01-01-2022')
-        path.mkdir(exist_ok=True)
-        now = datetime.datetime.now()
-        filename = now.strftime('%d%m%Y-%H%M%S') + f'-{live_count}'
-        live_image.save(str(path/f'{filename}.png'))
+        save_live_image()
 
         # print update message
         print_message('Congrats, you have spawned new iffy fishies!')
@@ -366,10 +364,6 @@ def save_live_image():
     if live_image is None:
         return
 
-    filename = filedialog.asksaveasfile(mode='wb', title='Save file', initialfile='your_iffy_fishy_aquarium', defaultextension='.gif', filetypes=(('PNG', ('PNG', '*.png')),('BMP', ('*.bmp','*.jdib')),('GIF', '*.gif')))
-    if not filename:
-        return
-
     color = preview_canvas.cget('bg') if preview_canvas.cget('bg') != 'SystemButtonFace' else None
     if color is None:
         image_to_save = live_image
@@ -378,7 +372,18 @@ def save_live_image():
         background = Image.new('RGBA', (width, height), color=color)
         image_to_save = Image.alpha_composite(background, live_image)
 
-    image_to_save.save(filename)
+    now = datetime.datetime.now()
+    time_string = now.strftime('%m-%d-%Y')
+    path = Path(f'./images/{time_string}_live_images')
+    
+    # if not os.path.exists(path):
+    #     os.makedirs(path)
+    path.mkdir(exist_ok=True)
+    now = datetime.datetime.now()
+    filename = now.strftime('%d%m%Y-%H%M%S') + f'-{live_count}'
+    image_to_save.save(str(path/f'{filename}.png'))
+
+
 
 # ----------------------------- WINDOW MODE FUNCTIONS---------------------------- #
 def change_mode():
@@ -389,7 +394,7 @@ def change_mode():
         stop_live()
         # print('Initializing image mode...')
         collage_buttons_frame.grid_remove()
-        live_image_save_button.grid_remove()
+        live_autosave_label.grid_remove()
         collage_add_button.config(state=tk.DISABLED)
         collage_save_button.config(state=tk.DISABLED)
         img_button_frame.grid()
@@ -397,7 +402,7 @@ def change_mode():
         stop_live()
         # print('Initializing collage mode...')
         img_button_frame.grid_remove()
-        live_image_save_button.grid_remove()
+        live_autosave_label.grid_remove()
         save_orig_button.config(state=tk.DISABLED)
         save_resized_button.config(state=tk.DISABLED)
         save_transformed_button.config(state=tk.DISABLED)
@@ -408,7 +413,7 @@ def change_mode():
         # print('Initializing live mode...')
         img_button_frame.grid_remove()
         collage_buttons_frame.grid_remove()
-        live_image_save_button.grid(column=0, row=2, pady=2, sticky='ew')
+        live_autosave_label.grid(column=0, row=2, pady=2, sticky='ew')
 
     live_count_label.config(text=f'${live_count:,}')
     default_image = Image.new('RGBA', (960, 540), color=None)
@@ -504,7 +509,8 @@ if __name__=='__main__':
     collage_save_button = tk.Button(collage_buttons_frame, text='Save Collage', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_fishtopia, state=tk.DISABLED)
     
     # SAVE LIVE IMAGE BUTTON
-    live_image_save_button = tk.Button(buttons_frame, text='Save Image', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_live_image)
+    # live_image_save_button = tk.Button(buttons_frame, text='Save Image', bd=3, font=(FONT_NAME, 10, 'normal'), command=save_live_image)
+    live_autosave_label = tk.Label(buttons_frame, text='Autosaves image every 30 seconds to "images" folder in IffyFishies directory.', wraplength=190, justify='left')
 
     # ---------------------------------- UPDATE MESSAGES -------------------------------- #
     updates_canvas = tk.Canvas(control_panel_frame)
@@ -512,7 +518,8 @@ if __name__=='__main__':
     now = datetime.datetime.now()
     timestamp_string = now.strftime('%H:%M')
     updates_message_id = updates_canvas.create_text(5, 5, text=f'{timestamp_string} - Welcome to IffyFishies!', width=200, fill='black', font=('Courier', 8, 'normal'), anchor='nw')
-    updates_canvas.grid(row=1, column=0, pady=5, sticky='nswe')
+    
+    updates_canvas.config(scrollregion=updates_canvas.bbox('all'))
 
     # ------------------------------------- LAYOUT --------------------------------------- #
     logo_frame.grid(column=0, row=0, columnspan=2, pady=(0, 15))
@@ -561,6 +568,8 @@ if __name__=='__main__':
     collage_add_button.grid(column=0, row=0, padx=2, pady=2, sticky='new')
     add_fishies_entry.grid(column=1, row=0, sticky='ew')
     collage_save_button.grid(column=0, row=3, padx=2, pady=2, sticky='new')
+
+    updates_canvas.grid(row=1, column=0, pady=5, sticky='nswe')
 
 
     root.mainloop()
