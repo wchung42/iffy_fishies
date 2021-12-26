@@ -2,15 +2,15 @@
 ### This is a project contribution in support of #TeamSeas.  
 
 ## Description
-IffyFishies is my contribution to the #TeamSeas campaign by Mark Rober and Mr.Beast. In this project, I code 30 million randomly generated fish for the 30 million dollar goal of the campaign. 
+IffyFishies is my contribution to the #TeamSeas campaign by Mark Rober and Mr.Beast. In this project, I code 30 million randomly generated fish for the 30 million dollar goal of the campaign.
+
+## About TeamSeas
+TeamSeas is a fundraising campaign by Mark Rober and Mr.Beast with the goal to raise 30 million dollars in order to remove 30 million pounds of trash from the Earth's waters. Please check out the campaign at [teamseas.org].
 
 ## Installation
 1. Download the latest release [here]
 2. Unzip the file with [7zip] or your program of choice
 3. Launch `iffyfishies.exe`
-
-[here]: https://github.com/wchung42/iffy_fishies/releases
-[7zip]: https://www.7-zip.org/
 
 ## Notes on usage
 * **_Note_: All images default to a transparent background unless the background color is changed.**
@@ -28,3 +28,11 @@ IffyFishies is my contribution to the #TeamSeas campaign by Mark Rober and Mr.Be
   * Images are automatically saved every `30 seconds`.
   * Images are saved to the `images` directory in the `iffyfishies` directory.
   * Requires an internet connection, otherwise the program raises a connection error.
+
+## Final Notes
+If you find a bug, please open an issue or contact me at [willchung42@gmail.com].
+
+[here]: https://github.com/wchung42/iffy_fishies/releases
+[7zip]: https://www.7-zip.org/
+[teamseas.org]: https://teamseas.org
+[willchung42@gmail.com]: mailto:willchung42@gmai.com?subject[GitHub]
